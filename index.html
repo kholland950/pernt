@@ -1,0 +1,90 @@
+<!doctype html>
+<html class="no-js" lang="">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>pernt</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="favicon.png" type="image/x-icon"/>
+
+    <!-- Place favicon.ico in the root directory -->
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+
+    <!-- materialize -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/css/materialize.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/js/materialize.min.js"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <!-- Easel -->
+    <script src="https://code.createjs.com/easeljs-0.8.2.min.js"></script>
+
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body onload="init();">
+<nav class="teal darken-1" role="navigation">
+    <div class="nav-wrapper container">
+        <a id="logo-container" href="#" class="brand-logo"><img class="logo" src="images/logo_white.png" width="130px"/></a>
+        <!--<ul class="right hide-on-med-and-down">
+            <li><a href="#">Navbar Link</a></li>
+        </ul>
+
+        <ul id="nav-mobile" class="side-nav">
+            <li><a href="#">Navbar Link</a></li>
+        </ul>
+        <a href="#" data-activates="nav-mobile" class="button-collapse"><i class="material-icons">menu</i></a>-->
+    </div>
+</nav>
+
+<!--[if lt IE 8]>
+<p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+<![endif]-->
+
+<div id="canvas-container" width="100%" height="100%">
+    <canvas id="paintCanvas"></canvas>
+</div>
+
+<div id="file-buttons" class="fixed-action-btn horizontal click-to-toggle" style="top: 90px; right: 24px;">
+    <a class="btn-floating btn-large blue">
+        <i class="material-icons">insert_drive_file</i>
+    </a>
+    <ul>
+        <li><a id="new" class="btn-floating red"><i class="material-icons">add</i></a></li>
+        <li><a id="save" class="btn-floating green"><i class="material-icons">save</i></a></li>
+        <li><a id="load" class="btn-floating green"><i class="material-icons">file_upload</i></a></li>
+    </ul>
+</div>
+
+<div id="edit-buttons" class="fixed-action-btn vertical" style="bottom: 45px; right: 24px;">
+    <a class="btn-floating btn-large red">
+        <i class="material-icons">edit</i>
+    </a>
+    <ul>
+        <li><a id="brush" class="btn-floating red"><i class="material-icons">brush</i></a></li>
+        <li><a id="line" class="btn-floating red"><i class="material-icons">remove</i></a></li>
+        <li><a id="polygon" class="btn-floating red"><i class="material-icons">crop_square</i></a></li>
+        <li><a id="weight" class="btn-floating blue"><i class="material-icons">line_weight</i></a></li>
+        <li><a id="fill" class="btn-floating blue"><i class="material-icons">format_color_fill</i></a></li>
+        <li><a id="color-picker" class="btn-floating blue modal-trigger" href="#modal1"><i class="material-icons">color_lens</i></a></li>
+        <li><a id="erase" class="btn-floating yellow darken-1"><i class="material-icons">delete</i></a></li>
+        <li><a id="undo" class="btn-floating green"><i class="material-icons">undo</i></a></li>
+        <li><a id="redo" class="btn-floating green"><i class="material-icons">redo</i></a></li>
+    </ul>
+</div>
+
+<!-- Modal Structure -->
+<div id="modal1" class="modal bottom-sheet">
+    <div class="modal-content">
+        <a href="#" onclick=""><i class="material-icons large blue-text">lens</i></a>
+        <a href="#" onclick=""><i class="material-icons large blue-text text-accent-2">lens</i></a>
+        <a href="#" onclick=""><i class="material-icons large green-text">lens</i></a>
+        <a href="#" onclick=""><i class="material-icons large green-text text-accent-2">lens</i></a>
+        <a href="#" onclick=""><i class="material-icons large grey-text">lens</i></a>
+        <a href="#" onclick=""><i class="material-icons large brown-text">lens</i></a>
+    </div>
+</div>
+
+<script src="js/main.js"></script>
+</body>
+</html>
