@@ -63,9 +63,9 @@ function init() {
         selectedWeight = je;
     });
 
-    $(document).on("mousedown", function(e) {
-        closeMenus();
-    });
+    //$(document).on("mousedown", function(e) {
+    //    closeMenus();
+    //});
 
     selectedColor = $(".pred");
     selectedColor.addClass("xlarge");
@@ -94,13 +94,28 @@ function init() {
 
     $('.modal-trigger').leanModal();
 
+    $("#share").click(sharePernting);
+
     stage = new createjs.Stage("paintCanvas");
     createjs.Touch.enable(stage);
     var navbarHeight = $("nav")[0].offsetHeight;
     stage.canvas.style.top = navbarHeight + "px";
     stage.canvas.width = window.innerWidth;
     stage.canvas.height = window.innerHeight - navbarHeight;
-    stage.enableDOMEvents(true);
+
+    var loadedCanvas = $("#loadedCanvas")[0];
+    if (loadedCanvas.src != undefined) {
+        var scaledCanvas = $("#scaledCanvas")[0];
+        scaledCanvas.height = stage.canvas.height;
+        scaledCanvas.width = stage.canvas.width;
+
+        var ctx = scaledCanvas.getContext("2d");
+        ctx.drawImage(loadedCanvas, 0, 0, loadedCanvas.width, loadedCanvas.height,
+                0, 0, scaledCanvas.width, scaledCanvas.height);
+
+        var bitmap = new createjs.Bitmap(scaledCanvas);
+        stage.addChild(bitmap);
+    }
 
     // set up our defaults:
     size = 10;
@@ -110,7 +125,9 @@ function init() {
 
     // add handler for stage mouse events:
     stage.on("stagemousedown", function(event) {
-        selectedTool.strategy.mouseDown(event);
+        if (event.nativeEvent.button == 0) { //left click only
+            selectedTool.strategy.mouseDown(event);
+        }
     });
 
     stage.on("stagemouseup", function(event) {
@@ -126,6 +143,25 @@ function init() {
     });
 
     stage.update();
+}
+
+function sharePernting() {
+    var dataURL = stage.canvas.toDataURL();
+
+    //this is sorta hacky
+    var urlPrefix = location.host + "/pernting/";
+
+    $.post({
+        url: "/svprnt",
+        data: {
+            imageDataURL: dataURL,
+            imageWidth: stage.canvas.width,
+            imageHeight: stage.canvas.height
+        },
+        success: function(data) {
+            $("#uuid").val(urlPrefix + data);
+        }
+    });
 }
 
 function closeMenus() {
@@ -279,7 +315,7 @@ function Polygon() {
 
 function Fill() {
     this.mouseDown = function(event) {
-
+        window.alert("This tool is not yet implemented, sorry!");
     };
     this.mouseUp = function(event) {
 
