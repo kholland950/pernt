@@ -20,6 +20,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc
 open class PerntApplication : WebMvcAutoConfiguration() {
     companion object {
         @JvmStatic fun main(args: Array<String>) {
+            System.setProperty("org.eclipse.jetty.server.Request.maxFormContentSize", "500000");
             SpringApplication.run(PerntApplication::class.java, *args)
         }
     }
