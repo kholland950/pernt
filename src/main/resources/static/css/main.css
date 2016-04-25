@@ -1,5 +1,10 @@
+.logo-wrapper {
+    height: 100%;
+}
+
 .logo {
-    margin-top: 10px;
+    margin-top: 2%;
+    height: 85%;
 }
 
 .edit-menu {

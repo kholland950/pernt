@@ -56,8 +56,10 @@ function init() {
             return;
         }
         $(this).addClass("btn-large");
+        selectedTool.strategy.cancel();
         selectedTool.button.removeClass("btn-large");
         selectedTool = tools[this.id];
+        stage.update();
     });
 
     //bind weight tool click listener
@@ -131,7 +133,7 @@ function init() {
     //get loaded canvas (this comes from a shared pernting)
     var loadedCanvas = $("#loadedCanvas")[0];
     //if exists, scale and load the pernting
-    if (loadedCanvas.src != undefined) {
+    if (loadedCanvas.height > 0) {
         var scaledCanvas = $("#scaledCanvas")[0];
         scaledCanvas.height = stage.canvas.height;
         scaledCanvas.width = stage.canvas.width;
@@ -152,9 +154,9 @@ function init() {
 
     // add handlers for stage mouse events
     stage.on("stagemousedown", function(event) {
-        if (event.nativeEvent.button == 0) { //left click only
-            selectedTool.strategy.mouseDown(event);
-        }
+        //if (event.nativeEvent.button == 0) { //left click only
+        selectedTool.strategy.mouseDown(event);
+        //}
     });
     stage.on("stagemouseup", function(event) {
         selectedTool.strategy.mouseUp(event);
@@ -237,6 +239,9 @@ function Brush() {
             .drawCircle(event.stageX, event.stageY, size/2);
         stage.update();
 
+        oldX = event.stageX;
+        oldY = event.stageY;
+
         mouseDown = true;
         undone = []; //kill 'redo' stack
     };
@@ -258,8 +263,9 @@ function Brush() {
     };
 
     this.doubleClick = function(event) {
-
-    }
+    };
+    this.cancel = function() {
+    };
 }
 
 /**
@@ -270,7 +276,10 @@ function Lines() {
     var oldX, oldY;
 
     this.mouseDown = function(event) {
-        if (Math.abs(oldX - event.stageX) > 3 || Math.abs(oldY - event.stageY) > 3) {
+        if (Math.abs(oldX - event.stageX) < size / 2 && Math.abs(oldY - event.stageY) < size / 2) {
+            this.reset();
+            return;
+        } else {
             shape = new createjs.Shape();
             undone = [];
             stage.addChild(shape);
@@ -285,22 +294,24 @@ function Lines() {
         oldY = event.stageY;
     };
     this.mouseUp = function(event) {
-
     };
     this.mouseMove = function(event) {
-
     };
     this.doubleClick = function(event) {
-        oldX = undefined;
-        oldY = undefined;
+        this.reset();
     };
     this.undo = function() {
+        this.reset();
+    };
+    this.redo = function() {
+        this.reset();
+    };
+    this.reset = function() {
         oldX = undefined;
         oldY = undefined;
     };
-    this.redo = function() {
-        oldX = undefined;
-        oldY = undefined;
+    this.cancel = function() {
+        this.reset();
     }
 }
 
@@ -313,6 +324,18 @@ function Polygon() {
     var shape;
 
     this.mouseDown = function(event) {
+        if (Math.abs(event.stageX - lastX) < size / 2 &&
+            Math.abs(event.stageY - lastY) < size / 2) {
+            close();
+            this.reset();
+            return;
+        }
+        if (Math.abs(event.stageX - startX) < size / 2 &&
+            Math.abs(event.stageY - startY) < size / 2) {
+            close();
+            this.reset();
+            return;
+        }
         if (shape == undefined) {
             shape = new createjs.Shape();
             undone = [];
@@ -337,28 +360,36 @@ function Polygon() {
 
     };
     this.doubleClick = function(event) {
-        shape.graphics.beginStroke(color)
-            .setStrokeStyle(size, "round")
-            .moveTo(lastX, lastY)
-            .lineTo(startX, startY);
-        stage.update();
-
-        reset();
+        close();
+        this.reset();
     };
     this.undo = function() {
-        reset();
+        this.reset();
     };
     this.redo = function() {
-        reset();
+        this.reset();
     };
 
-    function reset() {
+    this.reset = function() {
         shape = undefined;
         shape = undefined;
         startX = undefined;
         startY = undefined;
         lastX = undefined;
         lastY = undefined;
+    };
+
+    this.cancel = function() {
+        stage.removeChild(shape);
+        this.reset();
+    };
+
+    function close() {
+        shape.graphics.beginStroke(color)
+            .setStrokeStyle(size, "round")
+            .moveTo(lastX, lastY)
+            .lineTo(startX, startY);
+        stage.update();
     }
 }
 
@@ -379,6 +410,8 @@ function Fill() {
     };
     this.doubleClick = function(event) {
 
+    };
+    this.cancel = function() {
     }
 }
 
@@ -421,6 +454,9 @@ function Eraser() {
 
     this.doubleClick = function(event) {
 
+    }
+
+    this.cancel = function() {
     }
 }
 //---------
