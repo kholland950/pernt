@@ -11,12 +11,17 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 /**
- * Created by kevinholland on 4/11/16.
+ * Controller for saving pernting to database
+ * @author Kevin Holland
  */
 @RestController
 class SaveController() {
+    /** Autowried pernting repo for database access */
     @Autowired lateinit var repository: PerntingRepository;
 
+    /**
+     * Saves pernting to database
+     */
     @RequestMapping(value = "/svprnt", method = arrayOf(RequestMethod.POST))
     fun savePernting(@RequestParam(name = "imageDataURL") imageDataURL: String,
                      @RequestParam(name = "imageWidth") imageWidth: Int,

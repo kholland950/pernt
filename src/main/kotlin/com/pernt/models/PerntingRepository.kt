@@ -4,7 +4,7 @@ import org.springframework.data.repository.CrudRepository
 import javax.transaction.Transactional
 
 /**
- * Created by kevinholland on 4/11/16.
+ * CRUD Repository used for accessing pernting database
  */
 interface PerntingRepository : CrudRepository<Pernting, String> {
     @Transactional

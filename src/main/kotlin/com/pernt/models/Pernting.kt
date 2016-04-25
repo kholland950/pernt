@@ -7,20 +7,24 @@ import javax.persistence.Id
 import javax.persistence.Lob
 
 /**
- * Created by kevinholland on 4/11/16.
+ * Model for Perntings (drawings)
  */
 @Entity
 class Pernting {
+    //String id: This is a UUID
     @Id
     var id: String;
 
+    //String base64 representation of image. Used to render images when loaded
     @Lob
     @Column(name="imageDataURL")
     var imageDataURL: String;
 
+    //Int image width used for scaling to target screen
     @Column(name="imageWidth")
     var imageWidth: Int = 0;
 
+    //Int image height used for scaling to target screen
     @Column(name="imageHeight")
     var imageHeight: Int = 0;
 

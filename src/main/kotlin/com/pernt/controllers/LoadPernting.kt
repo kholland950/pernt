@@ -7,12 +7,17 @@ import org.springframework.web.bind.annotation.*
 import org.springframework.web.servlet.ModelAndView
 
 /**
- * Created by kevinholland on 4/11/16.
+ * Controller for pernting loading
+ * @author Kevin Holland
  */
 @Controller
 class LoadPernting {
+    /** Autowired pernting repo for database access */
     @Autowired lateinit var repository: PerntingRepository;
 
+    /**
+     * Loads pernting from database and passes to view
+     */
     @RequestMapping(value = "/pernting/{uuid}", method = arrayOf(RequestMethod.GET))
     @ResponseBody
     fun loadPernting(@PathVariable uuid: String): ModelAndView {

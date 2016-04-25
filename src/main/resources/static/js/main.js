@@ -1,18 +1,32 @@
+/**
+ * main.js - Main JS Code for Drawing
+ * @author Kevin Holland
+ *
+ *
+ * DESIGN PATTERNS:
+ * - Listener/Observer: used throughout, click listeners
+ *      - See line 51 for example
+ * - Command: Undo manager
+ *      - See line 102
+ * - Strategy Pattern: Drawing tools
+ *      - See line 228
+ */
+
+//globals, TODO refactor this, this is bad news bears
 var stage, size, color;
-
 var shape;
-
-//default select menu item is brush
 var selectedTool;
 var selectedWeight;
 var selectedColor;
-
 var undone = [];
+var tools;
 
-var items;
-
+/**
+ * Init called on body load
+ */
 function init() {
-    items = {
+    //selectable tools: associated button and strategy for each
+    tools = {
         brush: {
             button: $("#brush"),
             strategy: new Brush()
@@ -34,18 +48,19 @@ function init() {
             strategy: new Eraser()
         }
     };
+    selectedTool = tools.brush; //brush selected by default
 
-    selectedTool = items.brush; //brush selected by default
+    //bind all menu tool button click listeners
     $(".mt-btn").click(function() {
         if (this.id == selectedTool.button.attr("id")) {
             return;
         }
-
         $(this).addClass("btn-large");
         selectedTool.button.removeClass("btn-large");
-        selectedTool = items[this.id];
+        selectedTool = tools[this.id];
     });
 
+    //bind weight tool click listener
     $("#weight").click(function() {
         var select = $("#weight-select");
         if (select.is(":visible")) {
@@ -55,6 +70,7 @@ function init() {
         }
     });
 
+    //bind all line weight spec listeners
     $(".line-weight-spec").click(function() {
         size = $(this).attr("weight");
         var je = $("#w" + $(this).attr("weight"));
@@ -63,12 +79,12 @@ function init() {
         selectedWeight = je;
     });
 
+    //TODO determine if I want this functionality... if you click on the document it closes any open menus
     //$(document).on("mousedown", function(e) {
     //    closeMenus();
     //});
 
-    selectedColor = $(".pred");
-    selectedColor.addClass("xlarge");
+    //bind all preset color buttons
     $(".pcolor").click(function() {
         color = $(this).children("i").css("color");
         $("#currentColor").css("color", color);
@@ -77,7 +93,12 @@ function init() {
         selectedColor = $(this).children("i");
         selectedColor.addClass("xlarge");
     });
+    //default default selected color
+    selectedColor = $(".pred");
+    selectedColor.addClass("xlarge");
 
+    //COMMAND PATTERN
+    //bind undo button
     $("#undo").click(function() {
         var shape = stage.getChildAt(stage.getNumChildren() - 1);
         stage.removeChild(shape);
@@ -85,72 +106,81 @@ function init() {
         undone.push(shape);
         selectedTool.strategy.undo();
     });
-
+    //bind redo button
     $("#redo").click(function() {
         stage.addChild(undone.pop());
         stage.update();
         selectedTool.strategy.redo();
     });
 
-    $('.modal-trigger').leanModal();
-
+    //bind share button
     $("#share").click(sharePernting);
 
+    //init all modals
+    $('.modal-trigger').leanModal();
+
+    //START EASELJS INIT
     stage = new createjs.Stage("paintCanvas");
+    //enable touch devices
     createjs.Touch.enable(stage);
     var navbarHeight = $("nav")[0].offsetHeight;
     stage.canvas.style.top = navbarHeight + "px";
     stage.canvas.width = window.innerWidth;
     stage.canvas.height = window.innerHeight - navbarHeight;
 
+    //get loaded canvas (this comes from a shared pernting)
     var loadedCanvas = $("#loadedCanvas")[0];
+    //if exists, scale and load the pernting
     if (loadedCanvas.src != undefined) {
         var scaledCanvas = $("#scaledCanvas")[0];
         scaledCanvas.height = stage.canvas.height;
         scaledCanvas.width = stage.canvas.width;
-
+        //scale pernting using context
         var ctx = scaledCanvas.getContext("2d");
         ctx.drawImage(loadedCanvas, 0, 0, loadedCanvas.width, loadedCanvas.height,
                 0, 0, scaledCanvas.width, scaledCanvas.height);
-
+        //draw using bitmap
         var bitmap = new createjs.Bitmap(scaledCanvas);
         stage.addChild(bitmap);
     }
 
-    // set up our defaults:
+    //set up drawing defaults
     size = 10;
     selectedWeight = $("#w" + size);
     color = selectedColor.css("color");
     $("#currentColor").css("color", color);
 
-    // add handler for stage mouse events:
+    // add handlers for stage mouse events
     stage.on("stagemousedown", function(event) {
         if (event.nativeEvent.button == 0) { //left click only
             selectedTool.strategy.mouseDown(event);
         }
     });
-
     stage.on("stagemouseup", function(event) {
         selectedTool.strategy.mouseUp(event);
     });
-
     stage.on("stagemousemove",function(event) {
         selectedTool.strategy.mouseMove(event);
     });
-
     stage.on("dblclick", function(event) {
         selectedTool.strategy.doubleClick(event);
     });
 
+    //update stage after init for loaded canvas
     stage.update();
 }
 
+/**
+ * Sends pernting to database, gets uuid for url creation
+ */
 function sharePernting() {
     var dataURL = stage.canvas.toDataURL();
+    var HTTP = "http://";
+    var PATH = "/pernting/";
+    var url = HTTP + location.host + PATH;
 
-    //this is sorta hacky
-    var urlPrefix = location.host + "/pernting/";
-
+    //REST call to server to save pernting
+    //returns uuid
     $.post({
         url: "/svprnt",
         data: {
@@ -159,31 +189,42 @@ function sharePernting() {
             imageHeight: stage.canvas.height
         },
         success: function(data) {
-            $("#uuid").val(urlPrefix + data);
+            //update URL field with server response
+            //ex. http://pernt.xyz/pernting/880c087f-ba4f-4620-845d-b9186c4340cc
+            $("#shareUrl").val(url + data);
         }
     });
 }
 
+/**
+ * Close all menus
+ */
 function closeMenus() {
     $(".floating-menu").fadeOut();
     $('.fixed-action-btn').closeFAB();
 }
 
+/**
+ * Clear canvas and reset tools
+ */
 function clearCanvas() {
     stage.removeAllChildren();
     stage.update();
     closeMenus();
     undone = [];
     //reset tools
-    items.brush.strategy = new Brush();
-    items.lines.strategy = new Lines();
-    items.polygon.strategy = new Polygon();
-    items.fill.strategy = new Fill();
-    items.eraser.strategy = new Eraser();
+    tools.brush.strategy = new Brush();
+    tools.lines.strategy = new Lines();
+    tools.polygon.strategy = new Polygon();
+    tools.fill.strategy = new Fill();
+    tools.eraser.strategy = new Eraser();
 }
 
 //STRATEGY PATTERN ----
-
+/**
+ * Brush tool
+ * @constructor default
+ */
 function Brush() {
     var oldX, oldY;
     var mouseDown = false;
@@ -221,6 +262,10 @@ function Brush() {
     }
 }
 
+/**
+ * Line tool
+ * @constructor default
+ */
 function Lines() {
     var oldX, oldY;
 
@@ -259,6 +304,10 @@ function Lines() {
     }
 }
 
+/**
+ * Polygon tool
+ * @constructor default
+ */
 function Polygon() {
     var lastX, lastY, startX, startY;
     var shape;
@@ -313,6 +362,11 @@ function Polygon() {
     }
 }
 
+/**
+ * Fill tool
+ * @constructor default
+ * TODO: IMPLEMENT
+ */
 function Fill() {
     this.mouseDown = function(event) {
         window.alert("This tool is not yet implemented, sorry!");
@@ -328,6 +382,10 @@ function Fill() {
     }
 }
 
+/**
+ * Eraser tool
+ * @constructor default
+ */
 function Eraser() {
     var white = "#fff";
     var oldX, oldY;
