@@ -50,6 +50,10 @@
     font-size: 110px !important;
 }
 
+.pcolor {
+    text-shadow: #444 0 0 5px;
+}
+
 .pred {
     color: #D62246;
 }
@@ -79,4 +83,7 @@
 }
 .pblack {
     color: #000;
+}
+.pwhite {
+    color: #fff;
 }
