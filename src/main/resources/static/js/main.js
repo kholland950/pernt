@@ -25,6 +25,9 @@ var tools;
  * Init called on body load
  */
 function init() {
+
+    
+
     //selectable tools: associated button and strategy for each
     tools = {
         brush: {
@@ -34,10 +37,6 @@ function init() {
         lines: {
             button: $("#lines"),
             strategy: new Lines()
-        },
-        polygon: {
-            button: $("#polygon"),
-            strategy: new Polygon()
         },
         fill: {
             button: $("#fill"),
@@ -60,6 +59,11 @@ function init() {
         selectedTool.button.removeClass("btn-large");
         selectedTool = tools[this.id];
         stage.update();
+
+        var tip = $(this).attr("data-tip");
+        if (tip) {
+            Materialize.toast(tip, 3000);
+        }
     });
 
     //bind weight tool click listener
@@ -217,7 +221,6 @@ function clearCanvas() {
     //reset tools
     tools.brush.strategy = new Brush();
     tools.lines.strategy = new Lines();
-    tools.polygon.strategy = new Polygon();
     tools.fill.strategy = new Fill();
     tools.eraser.strategy = new Eraser();
 }
@@ -230,6 +233,7 @@ function clearCanvas() {
 function Brush() {
     var oldX, oldY;
     var mouseDown = false;
+    var cursor;
 
     this.mouseDown = function(event) {
         shape = new createjs.Shape();
@@ -251,20 +255,35 @@ function Brush() {
     };
 
     this.mouseMove = function(event) {
+        if (cursor) {
+            stage.removeChild(cursor);
+        }
+        cursor =  new createjs.Shape();
+        cursor.graphics.setStrokeStyle(1)
+            .beginStroke("#000000")
+            .drawCircle(0,0,size/2);
+        cursor.x = event.stageX;
+        cursor.y = event.stageY;
+        stage.addChild(cursor);
+
         if (oldX && mouseDown) {
             shape.graphics.beginStroke(color)
                 .setStrokeStyle(size, "round")
                 .moveTo(oldX, oldY)
                 .lineTo(event.stageX, event.stageY);
-            stage.update();
         }
         oldX = event.stageX;
         oldY = event.stageY;
+
+        stage.update();
+
     };
 
     this.doubleClick = function(event) {
     };
     this.cancel = function() {
+        stage.removeChild(cursor);
+        stage.update();
     };
 }
 
@@ -274,6 +293,8 @@ function Brush() {
  */
 function Lines() {
     var oldX, oldY;
+    var trace;
+    var cursor;
 
     this.mouseDown = function(event) {
         if (Math.abs(oldX - event.stageX) < size / 2 && Math.abs(oldY - event.stageY) < size / 2) {
@@ -288,6 +309,18 @@ function Lines() {
                 .setStrokeStyle(size, "round")
                 .moveTo(oldX, oldY)
                 .lineTo(event.stageX, event.stageY);
+
+            if (cursor != undefined) {
+                stage.removeChild(cursor);
+            }
+            cursor = new createjs.Shape();
+            cursor.graphics.setStrokeStyle(1)
+                .beginStroke("#000000")
+                .drawCircle(0,0,size);
+            cursor.x = event.stageX;
+            cursor.y = event.stageY;
+            stage.addChild(cursor);
+
             stage.update();
         }
         oldX = event.stageX;
@@ -296,6 +329,23 @@ function Lines() {
     this.mouseUp = function(event) {
     };
     this.mouseMove = function(event) {
+        if (oldX) {
+            if (trace != undefined) {
+                stage.removeChild(trace);
+            }
+            trace = new createjs.Shape();
+            stage.addChild(trace);
+
+            trace.graphics.beginStroke(color)
+                .setStrokeStyle(size, "round")
+                .moveTo(oldX, oldY)
+                .lineTo(event.stageX, event.stageY);
+
+
+            cursor.x = event.stageX;
+            cursor.y = event.stageY;
+            stage.update();
+        }
     };
     this.doubleClick = function(event) {
         this.reset();
@@ -309,6 +359,8 @@ function Lines() {
     this.reset = function() {
         oldX = undefined;
         oldY = undefined;
+        stage.removeChild(cursor);
+        stage.update();
     };
     this.cancel = function() {
         this.reset();
