@@ -19,6 +19,7 @@ var selectedTool;
 var selectedWeight;
 var selectedColor;
 var undone = [];
+var cursorOnScreen = false;
 var tools;
 
 /**
@@ -54,6 +55,7 @@ function init() {
         if (this.id == selectedTool.button.attr("id")) {
             return;
         }
+        cursorOnScreen = false;
         $(this).addClass("btn-large");
         selectedTool.strategy.cancel();
         selectedTool.button.removeClass("btn-large");
@@ -106,7 +108,11 @@ function init() {
     //COMMAND PATTERN
     //bind undo button
     $("#undo").click(function() {
-        var shape = stage.getChildAt(stage.getNumChildren() - 1);
+        var i = 1;
+        if (cursorOnScreen) {
+            i = 2;
+        }
+        var shape = stage.getChildAt(stage.getNumChildren() - i);
         stage.removeChild(shape);
         stage.update();
         undone.push(shape);
@@ -265,6 +271,7 @@ function Brush() {
         cursor.x = event.stageX;
         cursor.y = event.stageY;
         stage.addChild(cursor);
+        cursorOnScreen = true;
 
         if (oldX && mouseDown) {
             shape.graphics.beginStroke(color)
@@ -301,14 +308,9 @@ function Lines() {
             this.reset();
             return;
         } else {
-            shape = new createjs.Shape();
             undone = [];
-            stage.addChild(shape);
 
-            shape.graphics.beginStroke(color)
-                .setStrokeStyle(size, "round")
-                .moveTo(oldX, oldY)
-                .lineTo(event.stageX, event.stageY);
+            trace = undefined;
 
             if (cursor != undefined) {
                 stage.removeChild(cursor);
