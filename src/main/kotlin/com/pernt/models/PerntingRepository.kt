@@ -1,6 +1,7 @@
 package com.pernt.models
 
 import org.springframework.data.repository.CrudRepository
+import java.util.*
 import javax.transaction.Transactional
 
 /**
@@ -8,5 +9,5 @@ import javax.transaction.Transactional
  */
 interface PerntingRepository : CrudRepository<Pernting, String> {
     @Transactional
-    fun findById(id: String): Pernting;
+    override fun findById(id: String): Optional<Pernting>
 }

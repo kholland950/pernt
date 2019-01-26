@@ -5,10 +5,4 @@ package com.pernt.models
  */
 
 
-class HelloMessage {
-    var name: String
-
-    constructor(name: String) {
-        this.name = name
-    }
-}
+class HelloMessage(var name: String)

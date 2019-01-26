@@ -17,17 +17,17 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 class SaveController() {
     /** Autowried pernting repo for database access */
-    @Autowired lateinit var repository: PerntingRepository;
+    @Autowired lateinit var repository: PerntingRepository
 
     /**
      * Saves pernting to database
      */
-    @RequestMapping(value = "/svprnt", method = arrayOf(RequestMethod.POST))
+    @RequestMapping(value = ["/svprnt"], method = [(RequestMethod.POST)])
     fun savePernting(@RequestParam(name = "imageDataURL") imageDataURL: String,
                      @RequestParam(name = "imageWidth") imageWidth: Int,
                      @RequestParam(name = "imageHeight") imageHeight: Int ): ResponseEntity<String> {
-        var pernting = Pernting(imageDataURL, imageWidth, imageHeight);
-        repository.save(pernting);
-        return ResponseEntity(pernting.id, HttpStatus.OK);
+        val pernting = Pernting(imageDataURL, imageWidth, imageHeight)
+        repository.save(pernting)
+        return ResponseEntity(pernting.id, HttpStatus.OK)
     }
 }

@@ -1,0 +1,60 @@
+buildscript {
+    ext {
+        kotlinVersion = '1.2.71'
+        springBootVersion = '2.2.0.BUILD-SNAPSHOT'
+    }
+    repositories {
+        mavenCentral()
+        maven { url 'https://repo.spring.io/snapshot' }
+        maven { url 'https://repo.spring.io/milestone' }
+    }
+    dependencies {
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}" as Object
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${kotlinVersion}" as Object)
+        classpath("org.jetbrains.kotlin:kotlin-allopen:${kotlinVersion}" as Object)
+    }
+}
+
+apply plugin: 'kotlin'
+apply plugin: 'kotlin-spring'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+
+group = 'me.kevinholland'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '1.8'
+
+repositories {
+    mavenCentral()
+    maven { url 'https://repo.spring.io/snapshot' }
+    maven { url 'https://repo.spring.io/milestone' }
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation "org.springframework.boot:spring-boot-starter-thymeleaf"
+    implementation "org.springframework.boot:spring-boot-starter-jetty"
+    implementation "org.springframework.boot:spring-boot-starter-websocket"
+    implementation 'com.fasterxml.jackson.module:jackson-module-kotlin'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    implementation "org.jetbrains.kotlin:kotlin-reflect"
+    runtimeOnly 'org.springframework.boot:spring-boot-devtools'
+    runtimeOnly 'com.h2database:h2'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+compileKotlin {
+    kotlinOptions {
+        freeCompilerArgs = ['-Xjsr305=strict']
+        jvmTarget = '1.8'
+    }
+}
+
+compileTestKotlin {
+    kotlinOptions {
+        freeCompilerArgs = ['-Xjsr305=strict']
+        jvmTarget = '1.8'
+    }
+}

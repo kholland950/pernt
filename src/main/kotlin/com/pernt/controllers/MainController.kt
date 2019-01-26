@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.RequestMethod
  */
 @Controller
 class MainController {
-    @RequestMapping(value = "/", method = arrayOf(RequestMethod.GET))
+    @RequestMapping(value = ["/"], method = [(RequestMethod.GET)])
     fun indexMapping(): String {
-        return "index";
+        return "index"
     }
 }
