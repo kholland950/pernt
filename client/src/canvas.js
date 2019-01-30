@@ -12,10 +12,8 @@
  *      - See line 228
  */
 
-import $ from 'jquery';
-import M from 'materialize-css'
 import 'latest-createjs'
-import '../css/main.css'
+import '../../src/main/resources/static/css/main.css'
 
 let stage;
 let size;
@@ -52,87 +50,6 @@ function init() {
         }
     };
     selectedTool = tools.brush; //brush selected by default
-
-    //bind all menu tool button click listeners
-    $(".mt-btn").click(function() {
-        if (this.id === selectedTool.button.attr("id")) {
-            return;
-        }
-        cursorOnScreen = false;
-        $(this).addClass("btn-large");
-        selectedTool.strategy.cancel();
-        selectedTool.button.removeClass("btn-large");
-        selectedTool = tools[this.id];
-        stage.update();
-
-        const tip = $(this).attr("data-tip");
-        if (tip) {
-            M.toast({html: tip, displayLength: 3000});
-        }
-    });
-
-    //bind weight tool click listener
-    $("#weight").click(function() {
-        const select = $("#weight-select");
-        if (select.is(":visible")) {
-            select.fadeOut();
-        } else {
-            select.fadeIn();
-        }
-    });
-
-    //bind all line weight spec listeners
-    $(".line-weight-spec").click(function() {
-        size = $(this).attr("weight");
-        const je = $("#w" + $(this).attr("weight"));
-        selectedWeight.removeClass("darken-4");
-        je.addClass("darken-4");
-        selectedWeight = je;
-    });
-
-    $("#clear-canvas").click(function() {
-        clearCanvas()
-    });
-
-    //bind all preset color buttons
-    $(".pcolor").click(function() {
-        color = $(this).children("i").css("color");
-        $("#currentColor").css("color", color);
-        M.Modal.getInstance($("#modal1")[0]).close();
-        selectedColor.removeClass("xlarge");
-        selectedColor = $(this).children("i");
-        selectedColor.addClass("xlarge");
-    });
-    //default default selected color
-    selectedColor = $(".pred");
-    selectedColor.addClass("xlarge");
-
-    //COMMAND PATTERN
-    //bind undo button
-    $("#undo").click(function() {
-        let i = 1;
-        if (cursorOnScreen) {
-            i = 2;
-        }
-        const shape = stage.getChildAt(stage.getNumChildren() - i);
-        stage.removeChild(shape);
-        stage.update();
-        undone.push(shape);
-        selectedTool.strategy.undo();
-    });
-    //bind redo button
-    $("#redo").click(function() {
-        stage.addChild(undone.pop());
-        stage.update();
-        selectedTool.strategy.redo();
-    });
-
-    //bind share button
-    $("#share").click(sharePernting);
-
-    //init all modals
-    $('.modal').modal();
-    M.FloatingActionButton.init($('.fixed-action-btn'), {direction: 'left', hoverEnabled: false});
 
     //START EASELJS INIT
     stage = new createjs.Stage("paintCanvas");
