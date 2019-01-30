@@ -12,23 +12,26 @@
  *      - See line 228
  */
 
-//globals, TODO refactor this, this is bad news bears
-var stage, size, color;
-var shape;
-var selectedTool;
-var selectedWeight;
-var selectedColor;
-var undone = [];
-var cursorOnScreen = false;
-var tools;
+import $ from 'jquery';
+import M from 'materialize-css'
+import 'latest-createjs'
+import '../css/main.css'
+
+let stage;
+let size;
+let color;
+let shape;
+let selectedTool;
+let selectedWeight;
+let selectedColor;
+let tools;
+let undone = [];
+let cursorOnScreen = false;
 
 /**
  * Init called on body load
  */
 function init() {
-
-    
-
     //selectable tools: associated button and strategy for each
     tools = {
         brush: {
@@ -52,7 +55,7 @@ function init() {
 
     //bind all menu tool button click listeners
     $(".mt-btn").click(function() {
-        if (this.id == selectedTool.button.attr("id")) {
+        if (this.id === selectedTool.button.attr("id")) {
             return;
         }
         cursorOnScreen = false;
@@ -62,15 +65,15 @@ function init() {
         selectedTool = tools[this.id];
         stage.update();
 
-        var tip = $(this).attr("data-tip");
+        const tip = $(this).attr("data-tip");
         if (tip) {
-            Materialize.toast(tip, 3000);
+            M.toast({html: tip, displayLength: 3000});
         }
     });
 
     //bind weight tool click listener
     $("#weight").click(function() {
-        var select = $("#weight-select");
+        const select = $("#weight-select");
         if (select.is(":visible")) {
             select.fadeOut();
         } else {
@@ -81,22 +84,21 @@ function init() {
     //bind all line weight spec listeners
     $(".line-weight-spec").click(function() {
         size = $(this).attr("weight");
-        var je = $("#w" + $(this).attr("weight"));
+        const je = $("#w" + $(this).attr("weight"));
         selectedWeight.removeClass("darken-4");
         je.addClass("darken-4");
         selectedWeight = je;
     });
 
-    //TODO determine if I want this functionality... if you click on the document it closes any open menus
-    //$(document).on("mousedown", function(e) {
-    //    closeMenus();
-    //});
+    $("#clear-canvas").click(function() {
+        clearCanvas()
+    });
 
     //bind all preset color buttons
     $(".pcolor").click(function() {
         color = $(this).children("i").css("color");
         $("#currentColor").css("color", color);
-        $("#modal1").closeModal();
+        M.Modal.getInstance($("#modal1")[0]).close();
         selectedColor.removeClass("xlarge");
         selectedColor = $(this).children("i");
         selectedColor.addClass("xlarge");
@@ -108,11 +110,11 @@ function init() {
     //COMMAND PATTERN
     //bind undo button
     $("#undo").click(function() {
-        var i = 1;
+        let i = 1;
         if (cursorOnScreen) {
             i = 2;
         }
-        var shape = stage.getChildAt(stage.getNumChildren() - i);
+        const shape = stage.getChildAt(stage.getNumChildren() - i);
         stage.removeChild(shape);
         stage.update();
         undone.push(shape);
@@ -129,30 +131,31 @@ function init() {
     $("#share").click(sharePernting);
 
     //init all modals
-    $('.modal-trigger').leanModal();
+    $('.modal').modal();
+    M.FloatingActionButton.init($('.fixed-action-btn'), {direction: 'left', hoverEnabled: false});
 
     //START EASELJS INIT
     stage = new createjs.Stage("paintCanvas");
     //enable touch devices
     createjs.Touch.enable(stage);
-    var navbarHeight = $("nav")[0].offsetHeight;
+    const navbarHeight = $("nav")[0].offsetHeight;
     stage.canvas.style.top = navbarHeight + "px";
     stage.canvas.width = window.innerWidth;
     stage.canvas.height = window.innerHeight - navbarHeight;
 
     //get loaded canvas (this comes from a shared pernting)
-    var loadedCanvas = $("#loadedCanvas")[0];
+    const loadedCanvas = $("#loadedCanvas")[0];
     //if exists, scale and load the pernting
     if (loadedCanvas.height > 0) {
-        var scaledCanvas = $("#scaledCanvas")[0];
+        const scaledCanvas = $("#scaledCanvas")[0];
         scaledCanvas.height = stage.canvas.height;
         scaledCanvas.width = stage.canvas.width;
         //scale pernting using context
-        var ctx = scaledCanvas.getContext("2d");
+        const ctx = scaledCanvas.getContext("2d");
         ctx.drawImage(loadedCanvas, 0, 0, loadedCanvas.width, loadedCanvas.height,
                 0, 0, scaledCanvas.width, scaledCanvas.height);
         //draw using bitmap
-        var bitmap = new createjs.Bitmap(scaledCanvas);
+        const bitmap = new createjs.Bitmap(scaledCanvas);
         stage.addChild(bitmap);
     }
 
@@ -186,10 +189,10 @@ function init() {
  * Sends pernting to database, gets uuid for url creation
  */
 function sharePernting() {
-    var dataURL = stage.canvas.toDataURL();
-    var HTTP = "http://";
-    var PATH = "/pernting/";
-    var url = HTTP + location.host + PATH;
+    const dataURL = stage.canvas.toDataURL();
+    const HTTP = "http://";
+    const PATH = "/pernting/";
+    const url = HTTP + location.host + PATH;
 
     //REST call to server to save pernting
     //returns uuid
@@ -213,7 +216,7 @@ function sharePernting() {
  */
 function closeMenus() {
     $(".floating-menu").fadeOut();
-    $('.fixed-action-btn').closeFAB();
+    M.FloatingActionButton.getInstance($('.fixed-action-btn')).close();
 }
 
 /**
@@ -237,9 +240,9 @@ function clearCanvas() {
  * @constructor default
  */
 function Brush() {
-    var oldX, oldY;
-    var mouseDown = false;
-    var cursor;
+    let oldX, oldY;
+    let mouseDown = false;
+    let cursor;
 
     this.mouseDown = function(event) {
         shape = new createjs.Shape();
@@ -256,7 +259,7 @@ function Brush() {
         undone = []; //kill 'redo' stack
     };
 
-    this.mouseUp = function(event) {
+    this.mouseUp = function() {
         mouseDown = false
     };
 
@@ -299,9 +302,9 @@ function Brush() {
  * @constructor default
  */
 function Lines() {
-    var oldX, oldY;
-    var trace;
-    var cursor;
+    let oldX, oldY;
+    let trace;
+    let cursor;
 
     this.mouseDown = function(event) {
         if (Math.abs(oldX - event.stageX) < size / 2 && Math.abs(oldY - event.stageY) < size / 2) {
@@ -312,7 +315,7 @@ function Lines() {
 
             trace = undefined;
 
-            if (cursor != undefined) {
+            if (cursor !== undefined) {
                 stage.removeChild(cursor);
             }
             cursor = new createjs.Shape();
@@ -332,7 +335,7 @@ function Lines() {
     };
     this.mouseMove = function(event) {
         if (oldX) {
-            if (trace != undefined) {
+            if (trace !== undefined) {
                 stage.removeChild(trace);
             }
             trace = new createjs.Shape();
@@ -349,7 +352,7 @@ function Lines() {
             stage.update();
         }
     };
-    this.doubleClick = function(event) {
+    this.doubleClick = function() {
         this.reset();
     };
     this.undo = function() {
@@ -369,91 +372,13 @@ function Lines() {
     }
 }
 
-/**
- * Polygon tool
- * @constructor default
- */
-function Polygon() {
-    var lastX, lastY, startX, startY;
-    var shape;
-
-    this.mouseDown = function(event) {
-        if (Math.abs(event.stageX - lastX) < size / 2 &&
-            Math.abs(event.stageY - lastY) < size / 2) {
-            close();
-            this.reset();
-            return;
-        }
-        if (Math.abs(event.stageX - startX) < size / 2 &&
-            Math.abs(event.stageY - startY) < size / 2) {
-            close();
-            this.reset();
-            return;
-        }
-        if (shape == undefined) {
-            shape = new createjs.Shape();
-            undone = [];
-            stage.addChild(shape);
-            startX = event.stageX;
-            startY = event.stageY;
-        }
-
-        shape.graphics.beginStroke(color)
-            .setStrokeStyle(size, "round")
-            .moveTo(lastX, lastY)
-            .lineTo(event.stageX, event.stageY);
-        stage.update();
-
-        lastX = event.stageX;
-        lastY = event.stageY;
-    };
-    this.mouseUp = function(event) {
-
-    };
-    this.mouseMove = function(event) {
-
-    };
-    this.doubleClick = function(event) {
-        close();
-        this.reset();
-    };
-    this.undo = function() {
-        this.reset();
-    };
-    this.redo = function() {
-        this.reset();
-    };
-
-    this.reset = function() {
-        shape = undefined;
-        shape = undefined;
-        startX = undefined;
-        startY = undefined;
-        lastX = undefined;
-        lastY = undefined;
-    };
-
-    this.cancel = function() {
-        stage.removeChild(shape);
-        this.reset();
-    };
-
-    function close() {
-        shape.graphics.beginStroke(color)
-            .setStrokeStyle(size, "round")
-            .moveTo(lastX, lastY)
-            .lineTo(startX, startY);
-        stage.update();
-    }
-}
 
 /**
  * Fill tool
  * @constructor default
- * TODO: IMPLEMENT
  */
 function Fill() {
-    this.mouseDown = function(event) {
+    this.mouseDown = function() {
         window.alert("This tool is not yet implemented, sorry!");
     };
     this.mouseUp = function(event) {
@@ -474,9 +399,9 @@ function Fill() {
  * @constructor default
  */
 function Eraser() {
-    var white = "#fff";
-    var oldX, oldY;
-    var mouseDown = false;
+    let white = "#fff";
+    let oldX, oldY;
+    let mouseDown = false;
 
     this.mouseDown = function(event) {
         shape = new createjs.Shape();
@@ -490,7 +415,7 @@ function Eraser() {
         undone = []; //kill 'redo' stack
     };
 
-    this.mouseUp = function(event) {
+    this.mouseUp = function() {
         mouseDown = false
     };
 
@@ -506,11 +431,12 @@ function Eraser() {
         oldY = event.stageY;
     };
 
-    this.doubleClick = function(event) {
+    this.doubleClick = function(event) {};
 
-    }
-
-    this.cancel = function() {
-    }
+    this.cancel = function() {};
 }
 //---------
+
+$(document).ready(() => {
+    init()
+});

@@ -1,3 +1,6 @@
+@import "~materialize-css/dist/css/materialize.min.css";
+@import "~font-awesome/css/font-awesome.css";
+
 .logo-wrapper {
     height: 100%;
 }

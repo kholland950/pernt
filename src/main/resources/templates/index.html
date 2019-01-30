@@ -8,32 +8,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <link rel="icon" href="/imgs/favicon.png" type="image/x-icon"/>
 
-    <!-- Place favicon.ico in the root directory -->
-
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
-
-    <!-- materialize -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/css/materialize.min.css"/>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/js/materialize.min.js"></script>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
-
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css"/>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.5.10/clipboard.min.js"></script>
-
-    <!-- Easel -->
-    <!--TODO change this back to minified -->
-    <script src="https://code.createjs.com/createjs-2015.11.26.combined.js"></script>
-
-    <script src="//cdn.jsdelivr.net/sockjs/1/sockjs.min.js"></script>
-
-    <link rel="stylesheet" href="/css/main.css"/>
+    <link rel="stylesheet" href="/app.css"/>
 </head>
-<body onload="init();">
+<body>
 <nav class="teal darken-1" role="navigation" style="position: fixed">
     <div class="nav-wrapper container">
         <a id="logo-container" href="/" class="brand-logo center logo-wrapper">
-            <img class="logo" src="/imgs/logo_white.png"/></a>
+            <img class="logo" alt='Pernt' src="/imgs/logo_white.png"/></a>
     </div>
 </nav>
 
@@ -85,7 +67,7 @@
         <div class="flow-text">Are you sure you want to make a new pernting? <br/> Your current pernting will be lost.</div>
     </div>
     <div class="modal-footer">
-        <a href="#!" onclick="clearCanvas()" class="modal-action modal-close waves-effect waves-green btn-flat red-text">New pernting</a>
+        <a href="#!" id="clear-canvas" class="modal-action modal-close waves-effect waves-green btn-flat red-text">New pernting</a>
         <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat red-text">Cancel</a>
     </div>
 </div>
@@ -113,9 +95,11 @@
     <i id="currentColor" class="material-icons medium">lens</i>
 </a>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.5.10/clipboard.min.js"></script>
 <script>
-    var clipboard = new Clipboard('.btn');
+    var clipboard = new Clipboard('.bHilliardtn');
 </script>
-<script src="/js/main.js"></script>
+<script src="/runtime.js"></script>
+<script src="/app.js"></script>
 </body>
 </html>

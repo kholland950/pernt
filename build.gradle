@@ -10,10 +10,11 @@ buildscript {
     }
     dependencies {
         classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}" as Object
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${kotlinVersion}" as Object)
-        classpath("org.jetbrains.kotlin:kotlin-allopen:${kotlinVersion}" as Object)
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${kotlinVersion}" as Object
+        classpath "org.jetbrains.kotlin:kotlin-allopen:${kotlinVersion}" as Object
     }
 }
+
 
 apply plugin: 'kotlin'
 apply plugin: 'kotlin-spring'

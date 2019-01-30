@@ -1,0 +1,29 @@
+{
+  "name": "pernt",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/kholland950/pernt",
+  "author": "kholland950 <kevinholland94@gmail.com>",
+  "license": "MIT",
+  "browserslist": [
+    "> 0.5%",
+    "last 2 versions",
+    "Firefox ESR",
+    "not dead"
+  ],
+  "devDependencies": {
+    "@symfony/webpack-encore": "^0.22.4",
+    "autoprefixer": "^9.4.6"
+  },
+  "dependencies": {
+    "font-awesome": "^4.7.0",
+    "jquery": "^3.3.1",
+    "latest-createjs": "^1.0.24",
+    "material-design-icons": "^3.0.1",
+    "materialize-css": "^1.0.0",
+    "node-sass": "^4.11.0",
+    "postcss-import": "^12.0.1",
+    "postcss-loader": "^3.0.0",
+    "sass-loader": "^7.1.0"
+  }
+}
