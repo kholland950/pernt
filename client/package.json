@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@material-ui/core": "latest",
+    "createjs": "^1.0.1",
     "prop-types": "latest",
     "react": "latest",
     "react-dom": "latest",

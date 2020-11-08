@@ -1,24 +1,35 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogActions from '@material-ui/core/DialogActions';
 import Typography from '@material-ui/core/Typography';
+import { AppBar, Toolbar } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import withRoot from '../withRoot';
+import Canvas from '../components/canvas/canvas'
+import Brush from "../canvas-tools/brush";
 
 const styles = theme => ({
   root: {
     textAlign: 'center',
-    paddingTop: theme.spacing.unit * 20,
   },
+  canvas: {
+    position: 'fixed',
+  }
 });
 
 class Index extends React.Component {
+  constructor(props) {
+    super(props)
+    this.tools = {
+      brush: new Brush()
+    }
+  }
+
+  componentWillMount = () => {
+    this.setState({tool: this.tools.brush})
+  }
+
   state = {
+    tool: undefined,
     open: false,
   };
 
@@ -36,30 +47,18 @@ class Index extends React.Component {
 
   render() {
     const { classes } = this.props;
-    const { open } = this.state;
 
     return (
       <div className={classes.root}>
-        <Dialog open={open} onClose={this.handleClose}>
-          <DialogTitle>Super Secret Password</DialogTitle>
-          <DialogContent>
-            <DialogContentText>1-2-3-4-5</DialogContentText>
-          </DialogContent>
-          <DialogActions>
-            <Button color="primary" onClick={this.handleClose}>
-              OK
-            </Button>
-          </DialogActions>
-        </Dialog>
-        <Typography variant="h4" gutterBottom>
-          Material-UI
-        </Typography>
-        <Typography variant="subtitle1" gutterBottom>
-          example project
-        </Typography>
-        <Button variant="contained" color="secondary" onClick={this.handleClick}>
-          Super Secret Password
-        </Button>
+        <AppBar position='static' color='default'>
+          <Toolbar>
+            <Typography variant='h6' color='inherit'>
+              Pernt.
+            </Typography>
+          </Toolbar>
+        </AppBar>
+        
+        <Canvas className={classes.canvas} tool={this.state.tool}/>
       </div>
     );
   }
